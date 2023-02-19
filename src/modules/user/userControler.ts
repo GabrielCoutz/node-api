@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 import { IUser } from './Interface/IUser.js';
+import { generateToken } from './Utils/Token.js';
 
 const userMemory: IUser[] = [];
 
@@ -29,7 +30,9 @@ export const createUser = async (req: Request, res: Response) => {
 
   userMemory.push(user);
 
-  res.json(user);
+  const token = generateToken(id);
+
+  res.json({ token });
 };
 
 export const updateUser = async (req: Request, res: Response) => {
