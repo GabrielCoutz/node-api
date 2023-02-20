@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 import { IUser } from './Interface/IUser.js';
-import { generateToken } from './Utils/Token.js';
+import { generateToken, loggedUserId } from './Utils/Token.js';
 
 const userMemory: IUser[] = [];
 
@@ -36,8 +36,11 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { name, email } = req.body;
+  const id = loggedUserId(req);
+
+  if (!id) return res.json({ message: 'User not logged in' });
+
+  const { name, email } = req.body as IUser;
 
   const userIndex = userMemory.findIndex((user) => user.id === id);
   userMemory[userIndex] = { id, name, email };

@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import { Request } from 'express';
+import jwt from 'jsonwebtoken';
 
 interface IToken {
   id: string;
@@ -18,7 +18,7 @@ export const checkToken = (token: string): boolean => {
   }
 };
 
-export const getTokenFromHeader = (req: Request): string | undefined => {
+export const getIdFromToken = (req: Request): string | undefined => {
   const { headers } = req;
   const { authorization } = headers;
 
@@ -37,8 +37,10 @@ export const getTokenFromHeader = (req: Request): string | undefined => {
   }
 };
 
-export const userIsLogged = (req: Request, res: Response): boolean => {
-  const id = getTokenFromHeader(req);
+export const loggedUserId = (req: Request): undefined | string => {
+  const id = getIdFromToken(req);
 
-  return false;
+  if (!id) return;
+
+  return id;
 };
