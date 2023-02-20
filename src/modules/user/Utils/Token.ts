@@ -1,31 +1,14 @@
 import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 
+import { cookieParser } from './cookieParser.js';
+
 interface IToken {
   id: string;
 }
 
-export const generateToken = (payload: string): string =>
-  jwt.sign({ id: payload }, process.env.JWT_SECRET as string, {
-    expiresIn: '1d',
-  });
-
-export const checkToken = (token: string): boolean => {
+const verifyJwtToken = (token: string): string | undefined => {
   try {
-    return !!jwt.verify(token, process.env.JWT_SECRET as string);
-  } catch {
-    return false;
-  }
-};
-
-export const getIdFromToken = (req: Request): string | undefined => {
-  const { headers } = req;
-  const { authorization } = headers;
-
-  if (!authorization) return;
-
-  try {
-    const [_, token] = authorization.split(' ');
     const { id } = jwt.verify(
       token,
       process.env.JWT_SECRET as string,
@@ -35,6 +18,18 @@ export const getIdFromToken = (req: Request): string | undefined => {
   } catch {
     return;
   }
+};
+
+export const generateToken = (payload: string): string =>
+  jwt.sign({ id: payload }, process.env.JWT_SECRET as string, {
+    expiresIn: '1d',
+  });
+
+export const getIdFromToken = (req: Request): string | undefined => {
+  const { token } = cookieParser(req.headers.cookie);
+  const id = verifyJwtToken(token);
+
+  return id;
 };
 
 export const loggedUserId = (req: Request): undefined | string => {
