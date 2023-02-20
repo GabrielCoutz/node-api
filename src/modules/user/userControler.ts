@@ -3,8 +3,7 @@ import { Request, Response } from 'express';
 
 import { IUser } from './Interface/IUser.js';
 import { generateToken, loggedUserId } from './Utils/Token.js';
-
-const userMemory: IUser[] = [];
+import { updateUserInfo, userExists, userMemory } from './Utils/utils.js';
 
 export const getUsers = async (req: Request, res: Response) => {
   res.json(userMemory);
@@ -26,6 +25,7 @@ export const createUser = async (req: Request, res: Response) => {
     id,
     email,
     name,
+    indexRef: userMemory.length + 1,
   };
 
   userMemory.push(user);
@@ -48,15 +48,12 @@ export const updateUser = async (req: Request, res: Response) => {
 
   if (!id) return res.json({ message: 'User not logged in' });
 
-  const { name, email } = req.body as IUser;
+  if (!userExists(id)) res.json({ message: 'User not found' });
 
-  const userIndex = userMemory.findIndex((user) => user.id === id);
+  const body = req.body as IUser;
+  const user = updateUserInfo(id, body);
 
-  if (!userMemory[userIndex]) res.json({ message: 'User not found' });
-
-  userMemory[userIndex] = { id, name, email };
-
-  res.json(userMemory[userIndex]);
+  res.json(user);
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
