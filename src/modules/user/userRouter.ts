@@ -18,4 +18,4 @@ userRouter.get('/:id', getUser);
 
 userRouter.delete('/:id', deleteUser);
 
-userRouter.patch('/:id', updateUser);
+userRouter.patch('/', updateUser);
