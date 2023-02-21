@@ -9,7 +9,7 @@ import {
   findUserBy,
   updateUserInfo,
   usersMemory,
-} from './Utils/userFunctions.js'
+} from './Utils/userFunctions.js';
 
 export const getUsers = async (req: Request, res: Response) => {
   res.json(usersMemory);
@@ -44,6 +44,7 @@ export const createUser = async (req: Request, res: Response) => {
   };
 
   usersMemory.push(user);
+
   res.json({ user });
 };
 
