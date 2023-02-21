@@ -2,9 +2,10 @@
   "name": "deploy da API na vercel",
   "version": "1.0",
   "public": true,
-  "build": {
-    "src": "src/index.js"
-  },
+  "builds": [{
+    "src": "src/index.js",
+    "use": "@vercel/node"
+  }],
   "routes": [
     {
       "src": "/(.*)",
