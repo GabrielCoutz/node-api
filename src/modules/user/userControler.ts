@@ -3,14 +3,13 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 import { IUser } from './Interface/IUser.js';
-import { getIdFromToken } from './Utils/Token.js';
 import {
   allUserFieldsRecived,
   checkUser,
   findUserBy,
   updateUserInfo,
   usersMemory,
-} from './Utils/userFunctions.js';
+} from './Utils/userFunctions.js'
 
 export const getUsers = async (req: Request, res: Response) => {
   res.json(usersMemory);
