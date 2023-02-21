@@ -59,12 +59,15 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const id = getIdFromToken(req);
-  if (!id) return res.json({ message: 'User not logged in' });
+  const result = checkUser(req);
+  if ('message' in result) return res.json({ message: result.message });
 
-  const userIndex = usersMemory.findIndex((user) => user.id === id);
-  if (!userIndex) return res.json({ message: 'User not found' });
+  const idFromUrl = req.params.id;
+  if (result.id !== idFromUrl)
+    return res.json({ message: 'You cannot delete other user' });
 
+  const userIndex = usersMemory.findIndex((user) => user.id === idFromUrl);
   usersMemory.splice(userIndex, 1);
+
   res.json({ message: 'User deleted' });
 };
