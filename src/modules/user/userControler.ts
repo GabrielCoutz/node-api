@@ -3,11 +3,12 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 import { IUser } from './Interface/IUser.js';
-import { generateToken, loggedUserId } from './Utils/Token.js';
+import { getIdFromToken } from './Utils/Token.js';
 import {
   allUserFieldsRecived,
+  checkUser,
+  findUserBy,
   updateUserInfo,
-  userExists,
   usersMemory,
 } from './Utils/userFunctions.js';
 
@@ -16,9 +17,14 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const result = checkUser(req);
+  if ('message' in result) return res.json({ message: result.message });
 
-  const user = usersMemory.find((user) => user.id === id);
+  const idFromUrl = req.params.id;
+  if (result.id !== idFromUrl)
+    return res.json({ message: 'You cannot get info from other user' });
+
+  const user = findUserBy('id', result.id);
 
   res.json(user);
 };
@@ -43,19 +49,17 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const id = loggedUserId(req);
-
-  if (!id) return res.json({ message: 'User not logged in' });
-  if (!userExists(id)) res.json({ message: 'User not found' });
+  const result = checkUser(req);
+  if ('message' in result) return res.json({ message: result.message });
 
   const body = req.body as IUser;
-  const user = updateUserInfo(id, body);
+  const user = updateUserInfo(result.id, body);
 
   res.json(user);
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const id = loggedUserId(req);
+  const id = getIdFromToken(req);
   if (!id) return res.json({ message: 'User not logged in' });
 
   const userIndex = usersMemory.findIndex((user) => user.id === id);

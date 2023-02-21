@@ -31,11 +31,3 @@ export const getIdFromToken = (req: Request): string | undefined => {
 
   return id;
 };
-
-export const loggedUserId = (req: Request): undefined | string => {
-  const id = getIdFromToken(req);
-
-  if (!id) return;
-
-  return id;
-};
