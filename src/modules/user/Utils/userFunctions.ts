@@ -1,5 +1,3 @@
-import { Request } from 'express';
-
 import {
   ApiError,
   BadRequestError,
@@ -7,14 +5,12 @@ import {
   UnauthorizedError,
 } from '../../../helpers/ApiErrors.js';
 import { IUser, IUserRefined } from '../Interface/IUser.js';
-import { getIdFromToken } from './Token.js';
 
 export const usersMemory: IUser[] = [];
 
-export const userExists = (id: string): boolean => {
+export const checkUserExist = (id: string): void => {
   const foundUser = usersMemory.find((user) => user.id === id);
-
-  return !!foundUser;
+  if (!foundUser) throw new NotFoundError('User not found');
 };
 
 export const updateUserInfo = (id: string, userData: IUser): IUser => {
@@ -25,7 +21,7 @@ export const updateUserInfo = (id: string, userData: IUser): IUser => {
   return usersMemory[userIndex];
 };
 
-export const allUserFieldsRecived = (object: unknown): void => {
+export const checkAllUserFieldsRecived = (object: unknown): void => {
   const userFields = ['name', 'password', 'email'];
 
   if (!object || typeof object !== 'object') return;
@@ -35,31 +31,33 @@ export const allUserFieldsRecived = (object: unknown): void => {
     throw new BadRequestError('Some fields were not sent');
 };
 
-export const checkUser = (req: Request): string => {
-  const id = getIdFromToken(req);
+export const getIdFromParam = (idFromUrl: string): string => {
+  if (!idFromUrl)
+    throw new BadRequestError('You must provide a id in request parameters');
 
-  if (!id) throw new UnauthorizedError('User not logged in');
-
-  if (!userExists(id)) throw new NotFoundError('User not found');
-
-  return id;
+  return idFromUrl;
 };
 
 type findBy = 'email' | 'id';
-export const findUserBy = (
-  findBy: findBy,
-  input: string,
-): IUser | undefined => {
+export const findUserBy = (findBy: findBy, input: string): IUser => {
+  let user: IUser | undefined;
+
   switch (findBy) {
     case 'email':
-      return usersMemory.find((user) => user.email === input);
+      user = usersMemory.find((user) => user.email === input);
+      break;
 
     case 'id':
-      return usersMemory.find((user) => user.id === input);
+      user = usersMemory.find((user) => user.id === input);
+      break;
 
     default:
-      return undefined;
+      break;
   }
+
+  if (!user) throw new NotFoundError('User not found');
+
+  return user;
 };
 
 export const refineUserObject = (user: IUser): IUserRefined => ({
@@ -68,8 +66,13 @@ export const refineUserObject = (user: IUser): IUserRefined => ({
   name: user.name,
 });
 
-export const emailAlreadyInUse = (email: string): void => {
+export const checkEmailAlreadyInUse = (email: string): void => {
   const emailInUse = usersMemory.some((user) => user.email === email);
 
   if (emailInUse) throw new ApiError('This email is already in use', 409);
+};
+
+export const checkUserIsOwner = (userId: string, idFromUrl: string): void => {
+  if (userId !== idFromUrl)
+    throw new UnauthorizedError('You cannot change data from other user');
 };

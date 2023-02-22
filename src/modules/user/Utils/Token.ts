@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 
+import { UnauthorizedError } from '../../../helpers/ApiErrors.js';
 import { cookieParser } from './cookieParser.js';
 
 interface IToken {
@@ -25,9 +26,11 @@ export const generateToken = (payload: string): string =>
     expiresIn: '1d',
   });
 
-export const getIdFromToken = (req: Request): string | undefined => {
+export const getIdFromHttpCookie = (req: Request): string => {
   const { token } = cookieParser(req.headers.cookie);
   const id = verifyJwtToken(token);
+
+  if (!id) throw new UnauthorizedError('User not logged in');
 
   return id;
 };

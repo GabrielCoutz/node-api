@@ -12,12 +12,11 @@ export const userRouter = Router();
 
 userRouter.post('/', createUser);
 
-userRouter.get('/:id', getUser);
-userRouter.get('/', getUser);
+userRouter.get(['/:id', '/'], getUser);
 
-userRouter.delete('/:id', deleteUser);
+userRouter.delete(['/:id', '/'], deleteUser);
 
-userRouter.patch('/', updateUser);
+userRouter.patch(['/:id', '/'], updateUser);
 
 userRouter.put('', () => {
   throw new MethodNotAllowedError();
