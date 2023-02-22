@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-import { IUser } from '../Interface/IUser.js';
+import { IUser, IUserRefined } from '../Interface/IUser.js';
 import { getIdFromToken } from './Token.js';
 
 export const usersMemory: IUser[] = [];
@@ -29,12 +29,12 @@ export const allUserFieldsRecived = (object: unknown): boolean => {
 
 export const checkUser = (
   req: Request,
-): { id: string } | { message: string } => {
+): { id: string } | { message: string; status: number } => {
   const id = getIdFromToken(req);
 
-  if (!id) return { message: 'User not logged in' };
+  if (!id) return { message: 'User not logged in', status: 401 };
 
-  if (!userExists(id)) return { message: 'User not found' };
+  if (!userExists(id)) return { message: 'User not found', status: 404 };
 
   return { id };
 };
@@ -55,3 +55,9 @@ export const findUserBy = (
       return undefined;
   }
 };
+
+export const refineUserObject = (user: IUser): IUserRefined => ({
+  email: user.email,
+  id: user.id,
+  name: user.name,
+});

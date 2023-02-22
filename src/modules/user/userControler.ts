@@ -7,26 +7,28 @@ import {
   allUserFieldsRecived,
   checkUser,
   findUserBy,
+  refineUserObject,
   updateUserInfo,
   usersMemory,
 } from './Utils/userFunctions.js';
 
 export const getUser = async (req: Request, res: Response) => {
   const result = checkUser(req);
-  if ('message' in result) return res.json({ message: result.message });
+  if ('message' in result)
+    return res.status(result.status).json({ message: result.message });
 
   const idFromUrl = req.params.id;
   if (result.id !== idFromUrl)
     return res.json({ message: 'You cannot get info from other user' });
 
-  const user = findUserBy('id', result.id);
+  const user = findUserBy('id', result.id) as IUser;
 
-  res.json(user);
+  res.status(200).json({ user: refineUserObject(user) });
 };
 
 export const createUser = async (req: Request, res: Response) => {
   if (!allUserFieldsRecived(req.body))
-    res.json({ message: 'Some fields were not sent' });
+    return res.status(400).json({ message: 'Some fields were not sent' });
 
   const { name, email, password } = req.body;
   const id = randomUUID();
@@ -41,12 +43,13 @@ export const createUser = async (req: Request, res: Response) => {
 
   usersMemory.push(user);
 
-  res.json({ user });
+  res.status(201).json({ user: refineUserObject(user) });
 };
 
 export const updateUser = async (req: Request, res: Response) => {
   const result = checkUser(req);
-  if ('message' in result) return res.json({ message: result.message });
+  if ('message' in result)
+    return res.status(result.status).json({ message: result.message });
 
   const body = req.body as IUser;
   const user = updateUserInfo(result.id, body);
@@ -56,7 +59,8 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   const result = checkUser(req);
-  if ('message' in result) return res.json({ message: result.message });
+  if ('message' in result)
+    return res.status(result.status).json({ message: result.message });
 
   const idFromUrl = req.params.id;
   if (result.id !== idFromUrl)

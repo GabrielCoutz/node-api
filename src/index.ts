@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 
 import { loginRouter } from './modules/login/loginRouter.js';
+import { IUser } from './modules/user/Interface/IUser.js';
 import { userRouter } from './modules/user/userRouter.js';
 import { usersRouter } from './modules/users/usersRouter.js';
 dotenv.config();

@@ -5,3 +5,9 @@ export interface IUser {
   passwordHash: string;
   indexRef: number;
 }
+
+export interface IUserRefined {
+  id: string;
+  email: string;
+  name: string;
+}
