@@ -11,10 +11,6 @@ import {
   usersMemory,
 } from './Utils/userFunctions.js';
 
-export const getUsers = async (req: Request, res: Response) => {
-  res.json(usersMemory);
-};
-
 export const getUser = async (req: Request, res: Response) => {
   const result = checkUser(req);
   if ('message' in result) return res.json({ message: result.message });
