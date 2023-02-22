@@ -1,5 +1,11 @@
 import { Request } from 'express';
 
+import {
+  ApiError,
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from '../../../helpers/ApiErrors.js';
 import { IUser, IUserRefined } from '../Interface/IUser.js';
 import { getIdFromToken } from './Token.js';
 
@@ -19,24 +25,24 @@ export const updateUserInfo = (id: string, userData: IUser): IUser => {
   return usersMemory[userIndex];
 };
 
-export const allUserFieldsRecived = (object: unknown): boolean => {
+export const allUserFieldsRecived = (object: unknown): void => {
   const userFields = ['name', 'password', 'email'];
 
-  if (!object || typeof object !== 'object') return false;
+  if (!object || typeof object !== 'object') return;
 
-  return userFields.every((field) => field in object);
+  const allFieldsWereSend = userFields.every((field) => field in object);
+  if (!allFieldsWereSend)
+    throw new BadRequestError('Some fields were not sent');
 };
 
-export const checkUser = (
-  req: Request,
-): { id: string } | { message: string; status: number } => {
+export const checkUser = (req: Request): string => {
   const id = getIdFromToken(req);
 
-  if (!id) return { message: 'User not logged in', status: 401 };
+  if (!id) throw new UnauthorizedError('User not logged in');
 
-  if (!userExists(id)) return { message: 'User not found', status: 404 };
+  if (!userExists(id)) throw new NotFoundError('User not found');
 
-  return { id };
+  return id;
 };
 
 type findBy = 'email' | 'id';
@@ -62,5 +68,8 @@ export const refineUserObject = (user: IUser): IUserRefined => ({
   name: user.name,
 });
 
-export const emailAlreadyInUse = (email: string): boolean =>
-  usersMemory.some((user) => user.email === email);
+export const emailAlreadyInUse = (email: string): void => {
+  const emailInUse = usersMemory.some((user) => user.email === email);
+
+  if (emailInUse) throw new ApiError('This email is already in use', 409);
+};
