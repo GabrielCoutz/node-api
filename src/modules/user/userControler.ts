@@ -6,6 +6,7 @@ import { IUser } from './Interface/IUser.js';
 import {
   allUserFieldsRecived,
   checkUser,
+  emailAlreadyInUse,
   findUserBy,
   refineUserObject,
   updateUserInfo,
@@ -31,8 +32,11 @@ export const createUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: 'Some fields were not sent' });
 
   const { name, email, password } = req.body;
-  const id = randomUUID();
 
+  if (emailAlreadyInUse(email))
+    return res.status(409).json({ message: 'This email is already in use' });
+
+  const id = randomUUID();
   const user: IUser = {
     id,
     email,
@@ -41,7 +45,7 @@ export const createUser = async (req: Request, res: Response) => {
     indexRef: usersMemory.length + 1,
   };
 
-  usersMemory.push(user);
+  usersMemory.push(user); // save user in fake database
 
   res.status(201).json({ user: refineUserObject(user) });
 };

@@ -61,3 +61,6 @@ export const refineUserObject = (user: IUser): IUserRefined => ({
   id: user.id,
   name: user.name,
 });
+
+export const emailAlreadyInUse = (email: string): boolean =>
+  usersMemory.some((user) => user.email === email);
