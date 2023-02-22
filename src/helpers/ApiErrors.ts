@@ -30,3 +30,9 @@ export class NotFoundError extends ApiError {
     super(message, 404);
   }
 }
+
+export class MethodNotAllowedError extends ApiError {
+  constructor() {
+    super('Desculpe, mas ainda não suportamos este método =)', 405);
+  }
+}

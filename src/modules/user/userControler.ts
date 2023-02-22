@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
+import { BadRequestError, NotFoundError } from '../../helpers/ApiErrors.js';
 import { IUser } from './Interface/IUser.js';
 import {
   allUserFieldsRecived,
@@ -14,13 +15,13 @@ import {
 } from './Utils/userFunctions.js';
 
 export const getUser = async (req: Request, res: Response) => {
-  const id = checkUser(req);
+  const id = req.params.id;
 
-  const idFromUrl = req.params.id;
-  if (id !== idFromUrl)
-    return res.json({ message: 'You cannot get info from other user' });
+  if (!id)
+    throw new BadRequestError('You must provide a id in request parameters');
 
-  const user = findUserBy('id', id) as IUser;
+  const user = findUserBy('id', id);
+  if (!user) throw new NotFoundError('User not found');
 
   res.status(200).json({ user: refineUserObject(user) });
 };
