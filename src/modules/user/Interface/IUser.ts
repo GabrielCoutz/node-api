@@ -6,8 +6,4 @@ export interface IUser {
   indexRef: number;
 }
 
-export interface IUserRefined {
-  id: string;
-  email: string;
-  name: string;
-}
+export type IUserRefined = Pick<IUser, 'email' | 'id' | 'name'>;

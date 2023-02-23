@@ -51,7 +51,7 @@ export const updateUser = async (req: Request, res: Response) => {
   const body = req.body as IUser;
   const user = updateUserInfo(idFromCookie, body);
 
-  res.status(201).json(refineUserObject(user));
+  res.status(200).json(refineUserObject(user));
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
@@ -63,5 +63,5 @@ export const deleteUser = async (req: Request, res: Response) => {
   const userIndex = usersMemory.findIndex((user) => user.id === idFromCookie);
   usersMemory.splice(userIndex, 1); // delete user from fake database
 
-  res.json(true);
+  res.status(200).json(true);
 };

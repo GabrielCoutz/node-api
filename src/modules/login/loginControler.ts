@@ -1,20 +1,18 @@
 import { Request, Response } from 'express';
 
 import { generateToken } from '../user/Utils/Token.js';
-import {
-  allLoginFieldsRecived,
-  checkCredentials,
-} from './Utils/loginFunctions.js';
+import { findUserBy } from '../user/Utils/userFunctions.js';
+import { checkBodySended, checkCredentials } from './Utils/loginFunctions.js';
 
 export const login = async (req: Request, res: Response) => {
-  if (!allLoginFieldsRecived(req.body))
-    return res.json({ message: 'Some fields were not sent' });
+  checkBodySended(req.body);
 
   const { email, password } = req.body;
-  const credentialsMatch = await checkCredentials(email, password);
-  if (!credentialsMatch) return res.json({ message: 'Invalid credentials.' });
+  await checkCredentials(email, password);
 
-  const token = generateToken(credentialsMatch.id);
+  const user = findUserBy('email', email);
+  const token = generateToken(user.id);
+
   res.cookie('token', token, {
     secure: false, // cuz is localhost
     httpOnly: true, //no access from code
@@ -23,5 +21,5 @@ export const login = async (req: Request, res: Response) => {
     sameSite: 'strict',
   });
 
-  res.json({ token });
+  res.json({ token, id: user.id });
 };

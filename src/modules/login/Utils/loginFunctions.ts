@@ -1,31 +1,49 @@
 import bcrypt from 'bcrypt';
 
-import { IUser } from '../../user/Interface/IUser.js';
+import {
+  BadRequestError,
+  UnauthorizedError,
+} from '../../../helpers/ApiErrors.js';
 import { findUserBy } from '../../user/Utils/userFunctions.js';
 
-export const allLoginFieldsRecived = (object: unknown): boolean => {
-  const userFields = ['password', 'email'];
+interface LoginPayload {
+  email: string;
+  password: string;
+}
 
-  if (!object || typeof object !== 'object') return false;
+const loginFieldIsEmpty = ([key, value]: string[]): boolean => !!(key && value);
 
-  return userFields.every((field) => field in object);
+const loginPayloadIsEmpty = (payload: object): payload is LoginPayload => {
+  const loginFields = ['password', 'email'];
+
+  const allLoginFieldsWereSend = loginFields.every((field) => field in payload);
+  if (!allLoginFieldsWereSend) return false;
+
+  const fields = Object.entries(payload);
+  return fields.every(loginFieldIsEmpty);
+};
+
+export const checkBodySended = (body: object): void => {
+  if (!loginPayloadIsEmpty(body))
+    throw new BadRequestError('Some fields were not sent');
 };
 
 export const checkPassword = async (
   password: string,
   passwordHash: string,
-): Promise<boolean> => bcrypt.compare(password, passwordHash);
+): Promise<void> => {
+  const passwordIsValid = await bcrypt.compare(password, passwordHash);
+
+  if (!passwordIsValid) throw new UnauthorizedError('Invalid credentials.');
+};
 
 export const checkCredentials = async (
   email: string,
   password: string,
-): Promise<undefined | IUser> => {
+): Promise<void> => {
   const user = findUserBy('email', email);
-  if (!user) return;
 
-  const passwordIsValid = await checkPassword(password, user.passwordHash);
+  await checkPassword(password, user.passwordHash);
 
-  if (user.email !== email || !passwordIsValid) return;
-
-  return user;
+  if (user.email !== email) throw new UnauthorizedError('Invalid credentials.');
 };
