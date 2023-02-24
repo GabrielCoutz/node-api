@@ -1,14 +1,15 @@
-import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 
-import { UnauthorizedError } from '../../../helpers/ApiErrors.js';
-import { cookieParser } from './cookieParser.js';
+import {
+  BadRequestError,
+  UnauthorizedError,
+} from '../../../helpers/ApiErrors.js';
 
 interface IToken {
   id: string;
 }
 
-const verifyJwtToken = (token: string): string | undefined => {
+const extractTokenId = (token: string): string | undefined => {
   try {
     const { id } = jwt.verify(
       token,
@@ -26,10 +27,20 @@ export const generateToken = (payload: string): string =>
     expiresIn: '1d',
   });
 
-export const getIdFromHttpCookie = (req: Request): string => {
-  const { token } = cookieParser(req.headers.cookie);
-  const id = verifyJwtToken(token);
+const getToken = (authorization: string): string => {
+  const token = authorization.split(' ')[1];
+  return token;
+};
 
+export const getIdFromBearerToken = (
+  authorization: string | undefined,
+): string => {
+  if (!authorization)
+    throw new BadRequestError('You must send an authorization header');
+
+  const token = getToken(authorization);
+
+  const id = extractTokenId(token);
   if (!id) throw new UnauthorizedError('User not logged in');
 
   return id;

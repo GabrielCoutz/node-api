@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 import { IUser } from './Interface/IUser.js';
-import { getIdFromHttpCookie } from './Utils/Token.js';
+import { getIdFromBearerToken } from './Utils/Token.js';
 import {
   checkAllUserFieldsRecived,
   checkEmailAlreadyInUse,
@@ -43,24 +43,24 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const idFromCookie = getIdFromHttpCookie(req);
+  const idFromToken = getIdFromBearerToken(req.headers.authorization);
   const idFromParam = getIdFromParam(req.params.id);
 
-  checkUserIsOwner(idFromCookie, idFromParam);
+  checkUserIsOwner(idFromToken, idFromParam);
 
   const body = req.body as IUser;
-  const user = updateUserInfo(idFromCookie, body);
+  const user = updateUserInfo(idFromToken, body);
 
   res.status(200).json(refineUserObject(user));
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const idFromCookie = getIdFromHttpCookie(req);
+  const idFromToken = getIdFromBearerToken(req.headers.authorization);
   const idFromParam = getIdFromParam(req.params.id);
 
-  checkUserIsOwner(idFromCookie, idFromParam);
+  checkUserIsOwner(idFromToken, idFromParam);
 
-  const userIndex = usersMemory.findIndex((user) => user.id === idFromCookie);
+  const userIndex = usersMemory.findIndex((user) => user.id === idFromToken);
   usersMemory.splice(userIndex, 1); // delete user from fake database
 
   res.status(200).json(true);

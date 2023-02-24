@@ -2,7 +2,9 @@ interface ICookieParser {
   [key: string]: string;
 }
 
-export const cookieParser = (cookiesHeader: string | undefined) => {
+export const cookieParser = (
+  cookiesHeader: string | undefined,
+): ICookieParser => {
   if (typeof cookiesHeader != 'string') return {};
 
   const cookies = cookiesHeader.split(/;\s*/);
