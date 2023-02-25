@@ -1,18 +1,15 @@
+import { Request } from 'express';
+
 import {
   BadRequestError,
-  ConflictError,
   NotFoundError,
   UnauthorizedError,
 } from '../../../helpers/ApiErrors.js';
 import { existValueIn } from '../../../helpers/validators.js';
 import { IUser, IUserRefined } from '../Interface/IUser.js';
+import { getIdFromBearerToken } from './Token.js';
 
 export const usersMemory: IUser[] = [];
-
-export const checkUserExist = (id: string): void => {
-  const foundUser = usersMemory.find((user) => user.id === id);
-  if (!foundUser) throw new NotFoundError('User not found');
-};
 
 export const updateUserInfo = (id: string, userData: IUser): IUser => {
   const userIndex = usersMemory.findIndex((user) => user.id === id);
@@ -22,54 +19,39 @@ export const updateUserInfo = (id: string, userData: IUser): IUser => {
   return usersMemory[userIndex];
 };
 
-interface UserFileds {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export const checkAllUserFieldsRecived = (
-  object: unknown,
-): object is UserFileds => {
-  const userFields = ['name', 'password', 'email'];
-
-  if (!object || typeof object !== 'object') return false;
-
-  const allFieldsWereSend = userFields.every((field) => field in object);
-  if (!allFieldsWereSend)
-    throw new BadRequestError('Some fields were not sent');
-
-  return true;
-};
-
-export const getIdFromParam = (idFromUrl: string): string => {
+export const getIdFromParam = (idFromUrl: string | undefined): string => {
   if (!idFromUrl)
     throw new BadRequestError('You must provide a id in request parameters');
 
   return idFromUrl;
 };
 
-type findBy = 'email' | 'id';
-export const findUserBy = (findBy: findBy, input: string): IUser => {
-  let user: IUser | undefined;
-
-  switch (findBy) {
-    case 'email':
-      user = usersMemory.find((user) => user.email === input);
-      break;
-
-    case 'id':
-      user = usersMemory.find((user) => user.id === input);
-      break;
-
-    default:
-      break;
-  }
+/**
+ * Recebe chave e valor para realizar a pesquisa do usuário. Se existir, é retornado, se não dispara um erro.
+ * @param key chave para pesquisa
+ * @param value valor a ser usado na pesquisa
+ * @returns
+ * @example findUserBy('id', '123') // User
+ * findUserBy('id', '456') // NotFoundError
+ */
+export const findUserBy = (key: 'email' | 'id', value: string): IUser => {
+  const user = usersMemory.find((user) => user[key] === value);
 
   if (!existValueIn(user)) throw new NotFoundError('User not found');
 
   return user;
 };
+
+/**
+ * Recebe um objeto cheio e retorna o mesmo mas sem propriedades privadas.
+ * @param user Objeto do tipo Usuário com todas propriedades.
+ * @returns Objeto do tipo Usuário mas sem propriedades sensíveis, como senha.
+ * @example refineUserObject({
+ * name: '...',
+ * email: '...',
+ * password: '...'
+ * }) // { name: '...', email: '...' }
+ */
 
 export const refineUserObject = (user: IUser): IUserRefined => ({
   email: user.email,
@@ -77,13 +59,28 @@ export const refineUserObject = (user: IUser): IUserRefined => ({
   name: user.name,
 });
 
-export const checkEmailAlreadyInUse = (email: string): void => {
-  const emailInUse = usersMemory.some((user) => user.email === email);
-
-  if (emailInUse) throw new ConflictError('This email is already in use');
-};
-
+/**
+ * Verifica se o usuário é o dono do ID que pretende realizar a ação.
+ * @param userId ID do usuário vindo do token
+ * @param idFromUrl ID do usuário vindo do endpoint
+ * @example checkUserIsOwner('123abc', '123def'); // UnauthorizedError
+ * checkUserIsOwner('123abc', '123abc'); // continua a execução
+ */
 export const checkUserIsOwner = (userId: string, idFromUrl: string): void => {
   if (userId !== idFromUrl)
     throw new UnauthorizedError('You cannot change data from other user');
+};
+
+/**
+ * Recebe a requisição e verifica se o token foi passado e se o id contido no mesmo é igual ao enviado no endpoint. Se não, dispara um erro.
+ * @param req Requisição
+ * @returns ID do usuário
+ */
+export const handleRequest = (req: Request): string => {
+  const idFromToken = getIdFromBearerToken(req.headers.authorization);
+  const idFromParam = getIdFromParam(req.params.id);
+
+  checkUserIsOwner(idFromToken, idFromParam);
+
+  return idFromToken;
 };

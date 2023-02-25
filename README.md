@@ -33,23 +33,13 @@ _clique para ir até seus métodos :point_down:_
 
 #### Informações
 
-- Todos erros são retornados com o objeto `{ message: '...' }`, juntamente do seu código no status, como `404`, `401`, `500`.
- 
+- Todos erros são retornados com o objeto `{ message: '...', statusTitle: '...' }`, juntamente do seu código no status, como `404`, `401`, `500`.
 <br>
-
-- O nome do erro, como `Unauthorized`, `BadRequest`, etc, será colocado em breve! Então não estranhe se nas requests abaixo estar mostrando `response.statusText` como vazio.
-
-<br>
-
 - Esta é uma API apenas para fins de testes, estudos e prática, os dados não persistem por muito tempo, sendo resetados periodicamente. Considerem de 10 em 10 minutos.
-
 <br>
-
 - Futuramente será adicionado o Typescript para agregar em todo projeto, então peço paciência :grin:
-
 <br>
-
-- Qualquer problema, sugestão ou comentário, estou aberto para contato no meu linkedin: [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gabrielcoutz/) 
+- Qualquer problema, sugestão ou comentário, não hesite em [abrir uma issue](https://github.com/GabrielCoutz/node-api/issues/new) ou entrar em contato pelo meu linkedin: [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gabrielcoutz/)
 
 ---
 <span id="post">:large_blue_diamond: Cadastrar dados</span>
@@ -65,14 +55,14 @@ async function registerUser(user) {
   });
   const json = await response.json();
 
-  if (!response.ok) console.log(`${response.statusText}: ${json.message}`);
+  if (!response.ok) console.log(`${json.statusTitle}: ${json.message}`);
   else console.log(json);
 }
 
 const user = {
-  name: 'usuario',
-  email: 'usuario@example.com',
-  password: 'usuario',
+  name: 'test',
+  email: 'test@example.com',
+  password: 'test',
 };
 
 registerUser(user);
@@ -95,7 +85,7 @@ async function getUsers() {
   const response = await fetch('/users');
   const json = await response.json();
 
-  if (!response.ok) console.log(`${response.statusText}: ${json.message}`);
+  if (!response.ok) console.log(`${json.statusTitle}: ${json.message}`);
   else console.log(json);
 }
 
@@ -118,7 +108,7 @@ async function getUser(userId) {
   const response = await fetch(`/user/${userId}`);
   const json = await response.json();
 
-  if (!response.ok) console.log(`${response.statusText}: ${json.message}`);
+  if (!response.ok) console.log(`${json.statusTitle}: ${json.message}`);
   else console.log(json);
 }
 
@@ -152,7 +142,7 @@ async function updateUser(userId, payload) {
   });
   const json = await response.json();
 
-  if (!response.ok) console.log(`${response.statusText}: ${json.message}`);
+  if (!response.ok) console.log(`${json.statusTitle}: ${json.message}`);
   else console.log(json);
 }
 
@@ -190,7 +180,7 @@ async function deleteUser(userId) {
   });
   const json = await response.json();
 
-  if (!response.ok) console.log(`${response.statusText}: ${json.message}`);
+  if (!response.ok) console.log(`${json.statusTitle}: ${json.message}`);
   else console.log(json);
 }
 
@@ -218,7 +208,7 @@ async function login(payload) {
   });
   const json = await response.json();
 
-  if (!response.ok) console.log(`${response.statusText}: ${json.message}`);
+  if (!response.ok) console.log(`${json.statusTitle}: ${json.message}`);
   else console.log(json);
 }
 
