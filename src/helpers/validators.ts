@@ -11,8 +11,9 @@
  * existValueIn(objectC) // true -> objectC is object;
  */
 
-export const existValueIn = <T>(item: T): item is NonNullable<T> =>
-  !(Object.keys(item) || item).length;
+export const existValueIn = <T extends object | undefined>(
+  item: T,
+): item is NonNullable<T> => item && !(Object.keys(item) || item).length;
 
 type endpoints = '/user' | '/login';
 interface BodyPayload {
@@ -26,9 +27,9 @@ interface BodyPayload {
  * @returns Boolean.
  */
 
-export const allFieldsSendedFrom = <T>(
+export const allFieldsSendedFrom = (
   endpoint: endpoints,
-  payload: T | BodyPayload,
+  payload: object,
 ): payload is BodyPayload => {
   const userFields = ['name', 'password', 'email'];
   const loginFields = ['password', 'email'];
