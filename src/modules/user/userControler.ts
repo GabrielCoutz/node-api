@@ -2,10 +2,11 @@ import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
+import { BadRequestError } from '../../helpers/ApiErrors.js';
+import { allFieldsSendedFrom } from '../../helpers/validators.js';
 import { IUser } from './Interface/IUser.js';
 import { getIdFromBearerToken } from './Utils/Token.js';
 import {
-  checkAllUserFieldsRecived,
   checkEmailAlreadyInUse,
   findUserBy,
   refineUserObject,
@@ -24,7 +25,8 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  checkAllUserFieldsRecived(req.body);
+  if (!allFieldsSendedFrom('/user', req.body))
+    throw new BadRequestError('Some fields were not sent');
 
   const { name, email, password } = req.body;
   checkEmailAlreadyInUse(email);

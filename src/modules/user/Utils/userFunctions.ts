@@ -1,9 +1,10 @@
 import {
-  ApiError,
   BadRequestError,
+  ConflictError,
   NotFoundError,
   UnauthorizedError,
 } from '../../../helpers/ApiErrors.js';
+import { existValueIn } from '../../../helpers/validators.js';
 import { IUser, IUserRefined } from '../Interface/IUser.js';
 
 export const usersMemory: IUser[] = [];
@@ -21,14 +22,24 @@ export const updateUserInfo = (id: string, userData: IUser): IUser => {
   return usersMemory[userIndex];
 };
 
-export const checkAllUserFieldsRecived = (object: unknown): void => {
+interface UserFileds {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export const checkAllUserFieldsRecived = (
+  object: unknown,
+): object is UserFileds => {
   const userFields = ['name', 'password', 'email'];
 
-  if (!object || typeof object !== 'object') return;
+  if (!object || typeof object !== 'object') return false;
 
   const allFieldsWereSend = userFields.every((field) => field in object);
   if (!allFieldsWereSend)
     throw new BadRequestError('Some fields were not sent');
+
+  return true;
 };
 
 export const getIdFromParam = (idFromUrl: string): string => {
@@ -55,7 +66,7 @@ export const findUserBy = (findBy: findBy, input: string): IUser => {
       break;
   }
 
-  if (!user) throw new NotFoundError('User not found');
+  if (!existValueIn(user)) throw new NotFoundError('User not found');
 
   return user;
 };
@@ -69,7 +80,7 @@ export const refineUserObject = (user: IUser): IUserRefined => ({
 export const checkEmailAlreadyInUse = (email: string): void => {
   const emailInUse = usersMemory.some((user) => user.email === email);
 
-  if (emailInUse) throw new ApiError('This email is already in use', 409);
+  if (emailInUse) throw new ConflictError('This email is already in use');
 };
 
 export const checkUserIsOwner = (userId: string, idFromUrl: string): void => {
