@@ -39,7 +39,7 @@ _clique para ir até seus métodos :point_down:_
 <br>
 - Futuramente será adicionado o Typescript para agregar em todo projeto, então peço paciência :grin:
 <br>
-- Qualquer problema, sugestão ou comentário, não hesite em [abrir uma issue](https://github.com/GabrielCoutz/node-api/issues/new) ou entrar em contato pelo meu linkedin: [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gabrielcoutz/)
+- Qualquer problema, sugestão ou comentário, não hesite em <a href="https://github.com/GabrielCoutz/node-api/issues/new">abrir uma issue</a> ou entrar em contato pelo meu <a href="https://www.linkedin.com/in/gabrielcoutz/">linkedin</a>.
 
 ---
 <span id="post">:large_blue_diamond: Cadastrar dados</span>

@@ -3,22 +3,29 @@ import bcrypt from 'bcrypt';
 import { UnauthorizedError } from '../../../helpers/ApiErrors.js';
 import { findUserBy } from '../../user/Utils/userFunctions.js';
 
-export const checkPassword = async (
+/**
+ * Recebe a senha do usuário, criptofraga, e compara com a que já está no banco de dados.
+ * @param password Senha enviada pelo usuário
+ * @param passwordHash Senha criptografada guardada no banco
+ * @returns Promise<true | false>
+ */
+export const comparePasswords = async (
   password: string,
   passwordHash: string,
-): Promise<void> => {
-  const passwordIsValid = await bcrypt.compare(password, passwordHash);
+): Promise<boolean> => await bcrypt.compare(password, passwordHash);
 
-  if (!passwordIsValid) throw new UnauthorizedError('Invalid credentials.');
-};
-
+/**
+ * Recebe as credenciais do usuário e verifica se são iguais às do banco. Se sim continua o código, se não, um erro é disparado.
+ * @param email Email enviado pelo usuário
+ * @param password Senha enviada pelo usuário
+ */
 export const checkCredentials = async (
   email: string,
   password: string,
 ): Promise<void> => {
   const user = findUserBy('email', email);
+  const passwordIsValid = await comparePasswords(password, user.passwordHash);
 
-  await checkPassword(password, user.passwordHash);
-
-  if (user.email !== email) throw new UnauthorizedError('Invalid credentials.');
+  if (user.email !== email || !passwordIsValid)
+    throw new UnauthorizedError('Invalid credentials.');
 };

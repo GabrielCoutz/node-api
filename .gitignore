@@ -3,3 +3,4 @@ dist
 .env
 a.html
 a.js
+a.ts
