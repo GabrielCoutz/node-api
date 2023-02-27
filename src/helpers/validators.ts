@@ -43,7 +43,9 @@ export const allFieldsSendedFrom = <T extends keyof typeof fields>(
   endpoint: T,
   payload: object,
 ): payload is EndpointPayload<T> & BodyPayload => {
-  const allFieldsWereSend = fields[endpoint].every((field) => field in payload);
+  const requiredFields: readonly string[] = fields[endpoint];
+
+  const allFieldsWereSend = requiredFields.every((field) => field in payload);
 
   return allFieldsWereSend;
 };
