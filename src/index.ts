@@ -10,7 +10,7 @@ import { usersRouter } from './modules/users/usersRouter.js';
 
 dotenv.config();
 
-const server = express();
+export const server = express();
 
 server.use(cors());
 server.use(express.json());
