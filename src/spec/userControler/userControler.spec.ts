@@ -1,29 +1,15 @@
 import request from 'supertest';
 import { expect, describe, it } from 'vitest';
 
-import { EndpointPayload } from '../../helpers/validators.js';
-import server from '../../index.js';
 import { IUserRefined } from '../../modules/user/Interface/IUser.js';
 import { generateToken } from '../../modules/user/Utils/Token.js';
-
-const newUser: EndpointPayload<'user'> = {
-  name: 'test',
-  email: 'test@gmail.com',
-  password: 'test',
-};
-
-const updatedUser: EndpointPayload<'user'> = {
-  name: 'updated',
-  email: 'updated@gmail.com',
-  password: 'updated',
-};
-const app = server;
+import { app, newUserData, updatedUserData } from '../staticData.js';
 
 describe('Endpoint: /user', () => {
   let user: IUserRefined;
 
   it('Should create a new user', async () => {
-    const response = await request(app).post('/user').send(newUser);
+    const response = await request(app).post('/user').send(newUserData);
     user = response.body;
     expect(response.statusCode).toEqual(201);
   });
@@ -36,7 +22,7 @@ describe('Endpoint: /user', () => {
   });
 
   it('Should not create a new user with email already in use', async () => {
-    const response = await request(app).post('/user').send(newUser);
+    const response = await request(app).post('/user').send(newUserData);
     expect(response.statusCode).toEqual(409);
   });
 
@@ -55,7 +41,7 @@ describe('Endpoint: /user', () => {
   it('Should not update user data without log in', async () => {
     const response = await request(app)
       .patch(`/user/${user.id}`)
-      .send(updatedUser);
+      .send(updatedUserData);
     expect(response.statusCode).toEqual(400);
   });
 
@@ -64,12 +50,12 @@ describe('Endpoint: /user', () => {
     const response = await request(app)
       .patch(`/user/${user.id}`)
       .auth(token, { type: 'bearer' })
-      .send(updatedUser);
+      .send(updatedUserData);
 
     expect(response.statusCode).toEqual(200);
     expect(response.body).toStrictEqual({
-      name: updatedUser.name,
-      email: updatedUser.email,
+      name: updatedUserData.name,
+      email: updatedUserData.email,
       id: user.id,
     });
   });
@@ -79,7 +65,7 @@ describe('Endpoint: /user', () => {
     const response = await request(app)
       .patch('/user/123')
       .auth(token, { type: 'bearer' })
-      .send(updatedUser);
+      .send(updatedUserData);
 
     expect(response.statusCode).toEqual(401);
   });
