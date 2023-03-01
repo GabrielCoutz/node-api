@@ -45,6 +45,26 @@ describe('Endpoint: /user', () => {
     expect(response.statusCode).toEqual(400);
   });
 
+  it('Should not update user data without give ID in url', async () => {
+    const token = generateToken(user.id).toUpperCase();
+
+    const response = await request(app)
+      .patch('/user/')
+      .auth(token, { type: 'bearer' })
+
+      .send(updatedUserData);
+    expect(response.statusCode).toEqual(401);
+  });
+
+  it('Should not update user data with changed bearer token', async () => {
+    const token = generateToken(user.id).toUpperCase();
+    const response = await request(app)
+      .patch(`/user/${user.id}`)
+      .auth(token, { type: 'bearer' })
+      .send(updatedUserData);
+    expect(response.statusCode).toEqual(401);
+  });
+
   it('Should update user data with log in', async () => {
     const token = generateToken(user.id);
     const response = await request(app)

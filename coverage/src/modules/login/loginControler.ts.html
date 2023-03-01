@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/22</span>
+                <span class='fraction'>22/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/22</span>
+                <span class='fraction'>22/22</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -95,18 +95,18 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from 'express';
 &nbsp;
 import { BadRequestError } from '../../helpers/ApiErrors.js';
@@ -116,18 +116,18 @@ import { generateToken } from '../user/Utils/Token.js';
 import { findUserBy } from '../user/Utils/userFunctions.js';
 import { checkCredentials } from './Utils/loginFunctions.js';
 &nbsp;
-export const login = <span class="fstat-no" title="function not covered" >async (req: Request, res: Response) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  if (!allFieldsSendedFrom('login', req.body))</span>
-<span class="cstat-no" title="statement not covered" >    throw new BadRequestError('Some fields were not sent');</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  const { email, password } = req.body;</span>
-<span class="cstat-no" title="statement not covered" >  await checkCredentials(email, password);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  const user = findUserBy('email', email) as IUser;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  const token = generateToken(user.id);</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  res.json({ token, id: user.id });</span>
+export const login = async (req: Request, res: Response) =&gt; {
+  if (!allFieldsSendedFrom('login', req.body))
+    throw new BadRequestError('Some fields were not sent');
+&nbsp;
+  const { email, password } = req.body;
+  await checkCredentials(email, password);
+&nbsp;
+  const user = findUserBy('email', email) as IUser;
+&nbsp;
+  const token = generateToken(user.id);
+&nbsp;
+  res.json({ token, id: user.id });
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -136,7 +136,7 @@ export const login = <span class="fstat-no" title="function not covered" >async 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-03-01T18:52:06.131Z
+                at 2023-03-01T19:39:40.794Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

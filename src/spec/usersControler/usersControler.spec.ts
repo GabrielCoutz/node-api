@@ -15,4 +15,24 @@ describe('Endpoint: /users', () => {
     const response = await request(app).get('/users');
     expect(response.body).toStrictEqual(usersArray);
   });
+
+  it('Should return MethodNotAllowedError', async () => {
+    const response = await request(app).post('/users');
+    expect(response.status).toStrictEqual(405);
+  });
+
+  it('Should return MethodNotAllowedError', async () => {
+    const response = await request(app).patch('/users');
+    expect(response.status).toStrictEqual(405);
+  });
+
+  it('Should return MethodNotAllowedError', async () => {
+    const response = await request(app).put('/users');
+    expect(response.status).toStrictEqual(405);
+  });
+
+  it('Should return MethodNotAllowedError', async () => {
+    const response = await request(app).delete('/users');
+    expect(response.status).toStrictEqual(405);
+  });
 });

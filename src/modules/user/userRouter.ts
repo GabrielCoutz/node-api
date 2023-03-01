@@ -1,6 +1,5 @@
 import { Router } from 'express';
 
-import { MethodNotAllowedError } from '../../helpers/ApiErrors.js';
 import {
   deleteUser,
   getUser,
@@ -17,7 +16,3 @@ userRouter.get(['/:id', '/'], getUser);
 userRouter.delete(['/:id', '/'], deleteUser);
 
 userRouter.patch(['/:id', '/'], updateUser);
-
-userRouter.put('', () => {
-  throw new MethodNotAllowedError();
-});
