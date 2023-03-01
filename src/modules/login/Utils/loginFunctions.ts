@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { UnauthorizedError } from '../../../helpers/ApiErrors.js';
+import { existValueIn } from '../../../helpers/validators.js';
 import { findUserBy } from '../../user/Utils/userFunctions.js';
 
 /**
@@ -24,6 +25,9 @@ export const checkCredentials = async (
   password: string,
 ): Promise<void> => {
   const user = findUserBy('email', email);
+
+  if (!existValueIn(user)) throw new UnauthorizedError('Invalid credentials');
+
   const passwordIsValid = await comparePasswords(password, user.passwordHash);
 
   if (user.email !== email || !passwordIsValid)

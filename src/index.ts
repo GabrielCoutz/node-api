@@ -10,7 +10,7 @@ import { usersRouter } from './modules/users/usersRouter.js';
 
 dotenv.config();
 
-export const server = express();
+const server = express();
 
 server.use(cors());
 server.use(express.json());
@@ -22,3 +22,5 @@ server.use('/login', loginRouter);
 
 server.use(middlewareError);
 server.listen(3333, () => console.log('Rodando na porta => 3333'));
+
+export default server;

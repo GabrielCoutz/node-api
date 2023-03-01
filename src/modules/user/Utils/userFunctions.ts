@@ -27,20 +27,15 @@ export const getIdFromParam = (idFromUrl: string | undefined): string => {
 };
 
 /**
- * Recebe chave e valor para realizar a pesquisa do usuário. Se existir, é retornado, se não dispara um erro.
+ * Recebe chave e valor para realizar a pesquisa do usuário.
  * @param key chave para pesquisa
  * @param value valor a ser usado na pesquisa
  * @returns
- * @example findUserBy('id', '123') // User
- * findUserBy('id', '456') // NotFoundError
  */
-export const findUserBy = (key: 'email' | 'id', value: string): IUser => {
-  const user = usersMemory.find((user) => user[key] === value);
-
-  if (!existValueIn(user)) throw new NotFoundError('User not found');
-
-  return user;
-};
+export const findUserBy = (
+  key: 'email' | 'id',
+  value: string,
+): IUser | undefined => usersMemory.find((user) => user[key] === value);
 
 /**
  * Recebe um objeto cheio e retorna o mesmo mas sem propriedades privadas.

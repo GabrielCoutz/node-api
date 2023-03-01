@@ -2,7 +2,11 @@ import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
-import { BadRequestError, ConflictError } from '../../helpers/ApiErrors.js';
+import {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from '../../helpers/ApiErrors.js';
 import {
   allFieldsSendedFrom,
   emaillAreadyInUse,
@@ -24,6 +28,8 @@ export const getUser = async (req: Request, res: Response) => {
     throw new BadRequestError('You must provide an id in request parameters');
 
   const user = findUserBy('id', idFromParam);
+
+  if (!existValueIn(user)) throw new NotFoundError('User not found');
 
   res.status(200).json(refineUserObject(user));
 };

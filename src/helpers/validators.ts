@@ -27,7 +27,7 @@ const fields = {
   login: ['password', 'email'],
 } as const;
 
-type EndpointPayload<T extends keyof typeof fields> = {
+export type EndpointPayload<T extends keyof typeof fields> = {
   [key in (typeof fields)[T][number]]: string;
 };
 
