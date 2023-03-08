@@ -35,13 +35,19 @@ export const getUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  if (!allFieldsSendedFrom('user', req.body))
-    throw new BadRequestError('Some fields were not sent');
+  const result = allFieldsSendedFrom('user', req.body);
+  if (result.isLeft())
+    return res
+      .status(result.value.status)
+      .json({ message: result.value.message });
 
   const { name, email, password } = req.body;
 
-  if (emaillAreadyInUse(email))
-    throw new ConflictError('This email is already in use');
+  const resultEmail = emaillAreadyInUse(email);
+  if (resultEmail.isLeft())
+    return res
+      .status(resultEmail.value.status)
+      .json({ message: resultEmail.value.message });
 
   const id = randomUUID();
   const user: IUser = {
@@ -53,7 +59,7 @@ export const createUser = async (req: Request, res: Response) => {
   };
   usersMemory.push(user); // save user in fake database
 
-  res.status(201).json(refineUserObject(user));
+  return res.status(201).json(refineUserObject(user));
 };
 
 export const updateUser = async (req: Request, res: Response) => {

@@ -8,10 +8,12 @@ import { app, newUserData, updatedUserData } from '../staticData.js';
 describe('Endpoint: /user', () => {
   let user: IUserRefined;
 
-  it('Should create a new user', async () => {
+  it('Should create a new user and return same email & name', async () => {
     const response = await request(app).post('/user').send(newUserData);
     user = response.body;
     expect(response.statusCode).toEqual(201);
+    expect(user.name).toEqual(newUserData.name);
+    expect(user.email).toEqual(newUserData.email);
   });
 
   it('Should not create a new user with missing fields', async () => {

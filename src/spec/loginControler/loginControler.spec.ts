@@ -16,7 +16,7 @@ describe('Endopint: /login', () => {
     const response = await request(app).post('/login').send({
       email: 'anyemail@example.com',
     });
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(401);
   });
 
   it('Should not log in with unknown credentials', async () => {
@@ -32,7 +32,7 @@ describe('Endopint: /login', () => {
       email: user.email,
       password: 'anyPassword',
     });
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(401);
   });
 
   it('Should log in with correct credentials and return token', async () => {

@@ -1,4 +1,6 @@
 import { usersMemory } from '../modules/user/Utils/userFunctions.js';
+import { ApiError, BadRequestError, ConflictError } from './ApiErrors.js';
+import { Either, left, right } from './Either.js';
 
 /**
  *
@@ -42,13 +44,19 @@ export type EndpointPayload<T extends keyof typeof fields> = {
 export const allFieldsSendedFrom = <T extends keyof typeof fields>(
   endpoint: T,
   payload: object,
-): payload is EndpointPayload<T> & BodyPayload => {
+): Either<ApiError, EndpointPayload<T> & BodyPayload> => {
   const requiredFields: readonly string[] = fields[endpoint];
 
   const allFieldsWereSend = requiredFields.every((field) => field in payload);
 
-  return allFieldsWereSend;
+  if (!allFieldsWereSend)
+    return left(new BadRequestError('Some fields were not sent'));
+
+  return right(payload as EndpointPayload<T> & BodyPayload);
 };
 
-export const emaillAreadyInUse = (email: string): boolean =>
-  usersMemory.some((user) => user.email === email);
+export const emaillAreadyInUse = (email: string): Either<ApiError, boolean> => {
+  const result = usersMemory.some((user) => user.email === email);
+  if (result) return left(new ConflictError('This email is already in use'));
+  return right(result);
+};
